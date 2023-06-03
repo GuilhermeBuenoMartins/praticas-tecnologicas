@@ -8,6 +8,9 @@ import com.minsait.api.repository.ClienteRepository;
 import com.minsait.api.util.ObjectMapperUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -27,10 +29,19 @@ public class ApiController {
     private ClienteRepository clienteRepository;
 
     @GetMapping("/cliente")
-    public ResponseEntity<List<ClienteResponse>> findAll() {
-        final var clienteEntityList = clienteRepository.findAll();
-        final var clienteResponseList = ObjectMapperUtil.mapAll(clienteEntityList, ClienteResponse.class);
-        return ResponseEntity.ok(clienteResponseList);
+    public ResponseEntity<Page<ClienteResponse>> findAll(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String endereco,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int pageSize
+    ) {
+        final var clienteEntity = new ClienteEntity();
+        clienteEntity.setNome(nome);
+        clienteEntity.setEndereco(endereco);
+        Pageable pageable = PageRequest.of(page, pageSize);
+        final var clienteEntityList = clienteRepository.findAll(clienteEntity.clienteEntitySpecification(), pageable);
+        final var clienteResponsePage = ObjectMapperUtil.mapAll(clienteEntityList, ClienteResponse.class);
+        return ResponseEntity.ok(clienteResponsePage);
     }
 
     @GetMapping("/cliente/{id}")
