@@ -1,14 +1,16 @@
 package com.minsait.api.repository;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Entity
-@Table(name = "CLIENTE")
+@Table(name = "CLIENTE", schema = "API")
 public class ClienteEntity {
 
     @Id
@@ -20,12 +22,12 @@ public class ClienteEntity {
     @Column(name = "NOME", nullable = false, length = 200)
     private String nome;
 
-    @Column(name = "ENDERECO", nullable = false, length = 200)
+    @Column(name = "ENDERECO", length = 200)
     private String endereco;
 
-    @Column(name = "EMAIL", nullable = false, length = 100)
+    @Column(name = "EMAIL", length = 100)
     private String email;
 
-    @Column(name = "TELEFONE", nullable = false, length = 100)
+    @Column(name = "TELEFONE", length = 100)
     private String telefone;
 }
