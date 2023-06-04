@@ -64,10 +64,14 @@ public class ApiController implements ApiSwagger {
 
     @PutMapping("/cliente")
     public ResponseEntity<ClienteResponse> update(@RequestBody ClienteRequest clienteRequest) {
-        final var clienteEntity = ObjectMapperUtil.map(clienteRequest, ClienteEntity.class);
-        final var clienteUpdated = clienteRepository.save(clienteEntity);
-        final var clienteResponse = ObjectMapperUtil.map(clienteUpdated, ClienteResponse.class);
-        return ResponseEntity.ok(clienteResponse);
+        final var clienteFound = clienteRepository.findById(clienteRequest.getId());
+        if (clienteFound.isPresent()) {
+            final var clienteEntity = ObjectMapperUtil.map(clienteRequest, ClienteEntity.class);
+            final var clienteUpdated = clienteRepository.save(clienteEntity);
+            final var clienteResponse = ObjectMapperUtil.map(clienteUpdated, ClienteResponse.class);
+            return ResponseEntity.ok(clienteResponse);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/cliente/{id}")
